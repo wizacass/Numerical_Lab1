@@ -13,6 +13,9 @@ fx_coeffs = [-1.33, -2.93, 18.22, 9.70, -8.15]
 gx_min = -10
 gx_max = 10
 
+v_r = 0.4
+v_V = 0.014
+
 
 # f(x) = -1.33x^4 - 2.93x^3 + 18.22x^2 + 9.70x - 8.15
 def func_f(x):
@@ -26,6 +29,10 @@ def func_f(x):
 
 def func_g(x):
     return x * math.cos(x) ** 2 - (x / 2) ** 2
+
+
+def func_v(h):
+    return 0.08 * math.pi * h + 0.01 * math.sin(8 * math.pi * h) - v_V
 
 
 def rough_estimate(list):
@@ -44,29 +51,36 @@ def accurate_estimate(list):
     return 1 + (B / data[0]) ** root
 
 
-def solve(x_min, x_max, y_min, y_max, func, header, show_graph=False):
-    approx_roots = h.find_roots(x_min, x_max, scan_step, scan_accuracy, func)
-    simple_roots = m.simple_iteration(approx_roots, scan_step, precision, func)
-    secant_roots = m.secant(approx_roots, scan_step, precision, func)
+def solve(boundaries, func, header, show_graph=False, only_scan=False):
+    approx_roots = h.find_roots(
+        boundaries[0], boundaries[1], scan_step, scan_accuracy, func)
+    print(f"Solving {header}")
+    print(f"Accurate estimate:      [{boundaries[0]} : {boundaries[1]}]")
+    print(f"Approximate roots:      {approx_roots}")
+
+    if not only_scan:
+        simple_roots = m.simple_iteration(
+            approx_roots, scan_step, precision, func)
+        secant_roots = m.secant(approx_roots, scan_step, precision, func)
+        print(f"Simple iteration roots: {simple_roots}")
+        print(f"Secant roots:           {secant_roots}")
+
     scanned_roots = m.scanning(
         approx_roots, scan_step, scan_accuracy, precision, func)
+    print(f"Scanned roots:          {scanned_roots}")
 
     if show_graph:
-        plot(header, x_min, x_max, y_min, y_max, scanned_roots, func)
+        plot(header, boundaries, scanned_roots, func)
 
-    print(f"Solving {header}")
-    print(f"Accurate estimate:      [{x_min} : {x_max}]")
-    print(f"Approximate roots:      {approx_roots}")
-    print(f"Simple iteration roots: {simple_roots}")
-    print(f"Secant roots:           {secant_roots}")
-    print(f"Scanned roots:          {scanned_roots}")
     print()
 
 
-def plot(header, x_min, x_max, y_min, y_max, roots, func):
+def plot(header, boundaries, roots, func):
     data = []
     counts = []
     zeros = []
+    x_min = boundaries[0]
+    x_max = boundaries[1]
     i = round(x_min, scan_accuracy)
     while i < round(x_max, scan_accuracy):
         data.append(func(i))
@@ -76,7 +90,7 @@ def plot(header, x_min, x_max, y_min, y_max, roots, func):
     for i in roots:
         zeros.append(0)
 
-    plt.axis([x_min, x_max, y_min, y_max])
+    plt.axis(boundaries)
     plt.plot(counts, data)
     plt.title(header)
     plt.xlabel('x')
@@ -95,8 +109,10 @@ def main():
     fx_min = round(-min(r, r_neg), scan_accuracy)
     fx_max = round(min(r, r_pos), scan_accuracy)
 
-    solve(fx_min, fx_max, -750, 250, func_f, "f(x)")
-    solve(gx_min, gx_max, -20, 5, func_g, "g(x)")
+    solve([fx_min, fx_max, -750, 250], func_f, "f(x)", False, True)
+    solve([gx_min, gx_max, -20, 5], func_g, "g(x)", False, True)
+    solve([gx_min, gx_max, -2.5, 2.5],
+          func_v, "V(h)", True, True)
 
 
 main()
