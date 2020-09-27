@@ -5,13 +5,13 @@ def simple_iteration(approx_roots, step, desired_accuracy, func):
     eps = 10 ** -desired_accuracy
     accurate_roots = []
     for root in approx_roots:
-        itmax, it = 5, 0
+        itmax, it = 25, 0
         xn = root
         prec = abs(func(xn))
         while prec > eps and it < itmax:
             it = it + 1
-            #xn = func(xn) / step + xn
-            xn = func(xn) + xn
+            xn = func(xn) / step + xn
+            #xn = func(xn) + xn
             prec = abs(func(xn))
 
         accurate_roots.append(round(xn, desired_accuracy))

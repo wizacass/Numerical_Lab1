@@ -51,7 +51,7 @@ def accurate_estimate(list):
     return 1 + (B / data[0]) ** root
 
 
-def solve(boundaries, func, header, show_graph=False, only_scan=False):
+def solve(boundaries, func, header, show_graph=False, only_scan=False, alpha=1):
     approx_roots = h.find_roots(
         boundaries[0], boundaries[1], scan_step, scan_accuracy, func)
     print(f"Solving {header}")
@@ -60,7 +60,7 @@ def solve(boundaries, func, header, show_graph=False, only_scan=False):
 
     if not only_scan:
         simple_roots = m.simple_iteration(
-            approx_roots, scan_step, precision, func)
+            approx_roots, alpha, precision, func)
         secant_roots = m.secant(approx_roots, scan_step, precision, func)
         print(f"Simple iteration roots: {simple_roots}")
         print(f"Secant roots:           {secant_roots}")
@@ -109,10 +109,10 @@ def main():
     fx_min = round(-min(r, r_neg), scan_accuracy)
     fx_max = round(min(r, r_pos), scan_accuracy)
 
-    solve([fx_min, fx_max, -750, 250], func_f, "f(x)", False, True)
-    solve([gx_min, gx_max, -20, 5], func_g, "g(x)", False, True)
+    solve([fx_min, fx_max, -750, 250], func_f, "f(x)", False, False, 1000)
+    solve([gx_min, gx_max, -20, 5], func_g, "g(x)", False, False, 10)
     solve([gx_min, gx_max, -2.5, 2.5],
-          func_v, "V(h)", True, True)
+          func_v, "V(h)", False, True)
 
 
 main()
