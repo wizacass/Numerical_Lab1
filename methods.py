@@ -4,6 +4,7 @@ import helpers as h
 def simple_iteration(approx_roots, step, desired_accuracy, func):
     eps = 10 ** -desired_accuracy
     accurate_roots = []
+    iterations = []
     for root in approx_roots:
         itmax, it = 25, 0
         xn = root
@@ -15,8 +16,9 @@ def simple_iteration(approx_roots, step, desired_accuracy, func):
             prec = abs(func(xn))
 
         accurate_roots.append(round(xn, desired_accuracy))
+        iterations.append(it)
 
-    return accurate_roots
+    return accurate_roots, iterations
 
 
 def secant(approx_roots, step, desired_accuracy, func):
@@ -32,7 +34,9 @@ def secant(approx_roots, step, desired_accuracy, func):
 
 
 def scanning(approx_roots, step, accuracy, desired_accuracy, func):
+    it = 0
     while accuracy < desired_accuracy:
+        it = it + 1
         accurate_roots = []
         accuracy = accuracy + 1
         step = step * 0.1
@@ -43,4 +47,4 @@ def scanning(approx_roots, step, accuracy, desired_accuracy, func):
             accurate_roots.extend(roots)
         approx_roots = accurate_roots
 
-    return approx_roots
+    return approx_roots, it

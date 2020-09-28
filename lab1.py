@@ -59,15 +59,16 @@ def solve(boundaries, func, header, show_graph=False, only_scan=False, alpha=1):
     print(f"Approximate roots:      {approx_roots}")
 
     if not only_scan:
-        simple_roots = m.simple_iteration(
+        simple_roots, simple_it = m.simple_iteration(
             approx_roots, alpha, precision, func)
         secant_roots = m.secant(approx_roots, scan_step, precision, func)
         print(f"Simple iteration roots: {simple_roots}")
-        print(f"Secant roots:           {secant_roots}")
+        print(f"Simple iterations:      {simple_it}")
+        print(f"Secant roots:           {secant_roots}; It: 1")
 
-    scanned_roots = m.scanning(
+    scanned_roots, scanned_it = m.scanning(
         approx_roots, scan_step, scan_accuracy, precision, func)
-    print(f"Scanned roots:          {scanned_roots}")
+    print(f"Scanned roots:          {scanned_roots}; It: {scanned_it}")
 
     if show_graph:
         plot(header, boundaries, scanned_roots, func)
